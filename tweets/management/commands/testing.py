@@ -35,32 +35,11 @@ class Command(BaseCommand):
         from tweets.models import Tweet 
         import re
         
-        songs = {}
-        tweets = Tweet.objects.all().order_by("created")
-        # Re's
-        songly   = re.compile("http://song.ly/\w{1,5}",re.IGNORECASE)
-        tinysong = re.compile("http://tinysong.com/\w{1,5}",re.IGNORECASE)
-        twisten  = re.compile("http://twisten.fm/l/\w{1,5}",re.IGNORECASE)
-        twiturm  = re.compile("http://twiturm.com/\w{1,5}",re.IGNORECASE)
-        trakz    = re.compile("http://tra.kz/\w{1,5}",re.IGNORECASE)
-        
-        patterns = [songly, tinysong, twisten, twiturm,trakz]
-        for tweet in tweets:
-            #print tweet.raw
-            for pattern in patterns:
-                matches = pattern.findall(tweet.raw)
-                if len(matches) > 0:
-                    print matches[0]
-                    if songs.get(matches[0],None):
-                        songs[matches[0]] += 1
-                    else:
-                        songs[matches[0]] = 1
-                    break
+        songs = Tweet.objects.top_tweets(limit=30)
                     
-                    
-        alist = sorted(songs.iteritems(), key=lambda (k,v): (v,k) ,reverse=True)
-        
-        print alist[0:10]
+                        
+        for song in songs:
+            print "%s %s" % (song[1],song[0])
         
                     
             
