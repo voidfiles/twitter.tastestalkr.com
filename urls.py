@@ -8,8 +8,8 @@ from django.conf import settings
 # admin.autodiscover()
 
 
-#top_tweets = cache.get('top_tweets')
-top_tweets = None
+top_tweets = cache.get('top_tweets')
+#top_tweets = None
 if not top_tweets:
     top_tweets = Tweet.objects.top_tweets()
     cache.set('top_tweets',top_tweets,600)
