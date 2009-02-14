@@ -13,7 +13,12 @@ if not top_tweets:
     top_tweets = Tweet.objects.top_tweets()
     cache.set('top_tweets',top_tweets,600)
 
-
+index_dict = {
+    'template': 'base.html',
+    "extra_context":{ 
+        "top_tweets":top_tweets 
+    } 
+}
 urlpatterns = patterns('',
     # Example:
     # (r'^twmusic/', include('twmusic.foo.urls')),
@@ -25,7 +30,9 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
     
-    (r'^$', "django.views.generic.simple.direct_to_template", {'template': 'base.html',"extra_context":{ "top_tweets":top_tweets } } ),
+    (r'^$', "django.views.generic.simple.direct_to_template", index_dict ),
+    (r'^index.html$', "django.views.generic.simple.direct_to_template", index_dict ),
+    
     (r'^assets/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     
 )
