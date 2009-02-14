@@ -11,7 +11,7 @@ class Command(BaseCommand):
     args = 'search'
 
     def handle(self, *app_labels, **options):
-        from tweets.models import *
+        from tweets.models import Tweet 
         import httplib2 
         import feedparser
         import pprint 
