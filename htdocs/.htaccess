@@ -1,0 +1,8 @@
+# Rewrite URLs of the form 'index.php?q=x':
+RewriteEngine on
+RewriteBase /
+RewriteRule ^$ index.html [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/(stats/|missing\.html|failed_auth\.html) [NC]
+RewriteRule ^(.*)$ /dispatch.fcgi/$1 [L,QSA]
