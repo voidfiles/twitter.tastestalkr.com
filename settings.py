@@ -1,11 +1,14 @@
 # Django settings for twmusic project.
-
+import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
+
+
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 MANAGERS = ADMINS
 
@@ -35,7 +38,7 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(SITE_ROOT, "htdocs","assets")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -66,9 +69,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'twmusic.urls'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(SITE_ROOT, 'templates')
 )
 
 INSTALLED_APPS = (
@@ -78,3 +79,6 @@ INSTALLED_APPS = (
 #    'django.contrib.sites',
     'twmusic.tweets'
 )
+
+
+CACHE_BACKEND = 'db://cache'
