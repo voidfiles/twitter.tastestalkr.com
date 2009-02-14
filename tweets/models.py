@@ -18,7 +18,7 @@ class Link(models.Model):
         
 class TweetManager(models.Manager):
 
-    def top_tweets(self):
+    def top_tweets(self,limit = 10):
         import re
         
         songs = {}
@@ -28,15 +28,15 @@ class TweetManager(models.Manager):
         tinysong = re.compile("http://tinysong.com/\w{1,5}",re.IGNORECASE)
         twisten  = re.compile("http://twisten.fm/l/\w{1,5}",re.IGNORECASE)
         twiturm  = re.compile("http://twiturm.com/\w{1,5}",re.IGNORECASE)
-        trakz    = re.compile("http://tra.kz/\w{1,5}",re.IGNORECASE)
+        trakz    = re.compile("http://tra.kz/\w+",re.IGNORECASE)
+        blipfm    = re.compile("http://blip.fm/~\w+",re.IGNORECASE)
         
-        patterns = [songly, tinysong, twisten, twiturm,trakz]
+        
+        patterns = [songly, tinysong, twisten, twiturm,trakz,blipfm]
         for tweet in tweets:
-            #print tweet.raw
             for pattern in patterns:
                 matches = pattern.findall(tweet.raw)
                 if len(matches) > 0:
-                    print matches[0]
                     if songs.get(matches[0],None):
                         songs[matches[0]] += 1
                     else:
@@ -46,7 +46,7 @@ class TweetManager(models.Manager):
                     
         alist = sorted(songs.iteritems(), key=lambda (k,v): (v,k) ,reverse=True)
         
-        return alist[0:10]
+        return alist[0:limit]
 
 
 class Tweet(models.Model):
