@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for tweet in top_tweets %}
+                        {% for tweet in ranked_tweets %}
                         <tr class="{% cycle 'row1' 'row2' %}">
                             <td><span>{{forloop.counter}}</span></td>
                             <td><a href="{{tweet.0}}">{{tweet.0}}</a></td>
