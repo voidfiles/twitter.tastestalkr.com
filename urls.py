@@ -1,24 +1,20 @@
 from django.conf.urls.defaults import *
 from twmusic.tweets.models import Tweet
 
-from django.core.cache import cache
 from django.conf import settings
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 
-#top_tweets = cache.get('top_tweets')
-top_tweets = None
-if not top_tweets:
-    top_tweets = Tweet.objects.top_tweets()
-    cache.set('top_tweets',top_tweets,600)
+
+ranked_tweets = Tweet.objects.top_tweets()
 
 index_dict = {
     'template': 'base.html',
     "extra_context":{ 
-        "top_tweets":top_tweets 
-    } 
+        "ranked_tweets":ranked_tweets 
+    }
 }
 urlpatterns = patterns('',
     # Example:
@@ -31,8 +27,11 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
     
+    (r'^filter/(?P<action>[^/]*)/(?P<value>[^/]*)/$', 'twmusic.tweets.views.filter'),
+    
     (r'^$', "django.views.generic.simple.direct_to_template", index_dict ),
     (r'^index.html$', "django.views.generic.simple.direct_to_template", index_dict ),
+    
     
     (r'^assets/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
     

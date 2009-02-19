@@ -51,13 +51,19 @@ class Command(BaseCommand):
             try:
                 tweet = Tweet.objects.get(tweet_link=tweet_link)
             except Tweet.DoesNotExist:
-                tweet = Tweet.objects.create(
+                
+                tweet = Tweet(
                     raw_atom_entry=raw_entry,
                     raw=raw_content,
                     created=created,
                     tweet_link=tweet_link,
                     author=author,
                 )
+                music_url = tweet.music_link_finder()
+                if music_url:
+                    tweet.music_link = music_url
+                tweet.save()
+                
             
         
         

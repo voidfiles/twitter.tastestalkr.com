@@ -31,7 +31,7 @@
         <div id="body" class="span-24">
             {% block body %}
             <div class="span-12">
-                <h2>The Top 10</h2>
+                <h2>The Top 10: <a href="/">All Time</a> or <a href="/filter/last/24hours/">Last 24 hours</a></h2>
                 <table id="top_tweets" class="span-12 last">
                     <thead>
                         <tr>
@@ -47,7 +47,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for tweet in top_tweets %}
+                        {% for tweet in ranked_tweets %}
                         <tr class="{% cycle 'row1' 'row2' %}">
                             <td><span>{{forloop.counter}}</span></td>
                             <td><a href="{{tweet.0}}">{{tweet.0}}</a></td>

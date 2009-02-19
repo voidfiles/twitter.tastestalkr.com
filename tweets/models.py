@@ -1,7 +1,16 @@
 from django.db import models
-
+import re
 # Create your models here.
 
+
+songly   = re.compile("http://song.ly/\w{1,5}",re.IGNORECASE)
+tinysong = re.compile("http://tinysong.com/\w{1,5}",re.IGNORECASE)
+twisten  = re.compile("http://twisten.fm/l/\w{1,5}",re.IGNORECASE)
+twiturm  = re.compile("http://twiturm.com/\w{1,5}",re.IGNORECASE)
+trakz    = re.compile("http://tra.kz/\w+",re.IGNORECASE)
+blipfm    = re.compile("http://blip.fm/~\w+",re.IGNORECASE)
+
+TWEET_PATTERNS = [songly, tinysong, twisten, twiturm,trakz,blipfm]
 
 class Link(models.Model):
     """(Links description)"""
@@ -18,23 +27,30 @@ class Link(models.Model):
         
 class TweetManager(models.Manager):
 
-    def top_tweets(self,limit = 10):
+    def top_tweets(self,limit = 10,with_in_hours= None):
         import re
+        from django.core.cache import cache
+        import datetime
+        
+        cache_key = "top_tweets_%s_%s" % ( limit,with_in_hours)
+        tweets = cache.get( cache_key)
+        if tweets: return tweets
+
+            
+        
         
         songs = {}
         tweets = self.all().order_by("created")
-        # Re's
-        songly   = re.compile("http://song.ly/\w{1,5}",re.IGNORECASE)
-        tinysong = re.compile("http://tinysong.com/\w{1,5}",re.IGNORECASE)
-        twisten  = re.compile("http://twisten.fm/l/\w{1,5}",re.IGNORECASE)
-        twiturm  = re.compile("http://twiturm.com/\w{1,5}",re.IGNORECASE)
-        trakz    = re.compile("http://tra.kz/\w+",re.IGNORECASE)
-        blipfm    = re.compile("http://blip.fm/~\w+",re.IGNORECASE)
+        if with_in_hours:
+            date = datetime.date.today()
+            date = datetime.date.today() + datetime.timedelta(hours=24)
+            tweets.filter(created__gte=date)
+
+
         
         
-        patterns = [songly, tinysong, twisten, twiturm,trakz,blipfm]
         for tweet in tweets:
-            for pattern in patterns:
+            for pattern in TWEET_PATTERNS:
                 matches = pattern.findall(tweet.raw)
                 if len(matches) > 0:
                     if songs.get(matches[0],None):
@@ -46,13 +62,18 @@ class TweetManager(models.Manager):
                     
         alist = sorted(songs.iteritems(), key=lambda (k,v): (v,k) ,reverse=True)
         
-        return alist[0:limit]
+        tweets = alist[0:limit]
+        
+        cache.set(cache_key,tweets,600)
+        
+        return tweets
 
 
 class Tweet(models.Model):
     """(Tweets description)"""
     raw_atom_entry = models.TextField(blank=True)
     tweet_link = models.URLField(blank=False, verify_exists=False,unique=True)
+    music_link = models.URLField(blank=False, verify_exists=False)
     raw = models.TextField(blank=False)
     created = models.DateTimeField(blank=True)
     found = models.DateTimeField(blank=False, auto_now_add=True)
@@ -65,5 +86,14 @@ class Tweet(models.Model):
         list_display = ('',)
         search_fields = ('',)
 
+    def music_link_finder(self): 
+        import re
+        for pattern in TWEET_PATTERNS:
+            matches = pattern.findall(self.raw)
+            if len(matches) > 0:
+                return matches[0]
+        return None
+                
+                
     def __unicode__(self):
         return u"%s" % (self.raw)
