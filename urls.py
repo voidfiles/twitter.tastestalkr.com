@@ -8,7 +8,6 @@ from django.conf import settings
 
 
 top_tweets = Tweet.objects.top_tweets()
-
 index_dict = {
     'template': 'base.html',
     "extra_context":{ 
@@ -27,6 +26,8 @@ urlpatterns = patterns('',
     # (r'^admin/', include(admin.site.urls)),
     
     (r'^filter/(?P<action>[^/]*)/(?P<value>[^/]*)/$', 'twmusic.tweets.views.filter'),
+    (r'^filter/last/(?P<time>[^/]*)/(?P<value>[^/]*)/$', 'twmusic.tweets.views.filter'),
+    
     
     (r'^$', "django.views.generic.simple.direct_to_template", index_dict ),
     (r'^index.html$', "django.views.generic.simple.direct_to_template", index_dict ),

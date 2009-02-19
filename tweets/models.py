@@ -27,7 +27,7 @@ class Link(models.Model):
         
 class TweetManager(models.Manager):
 
-    def top_tweets(self,limit = 10,with_in_hours= None):
+    def top_tweets(self,limit = 10,time = None,value= None):
         import re
         import datetime
         
@@ -35,7 +35,7 @@ class TweetManager(models.Manager):
         #from django.db.models import Count
         from django.db import connection
         
-        cache_key = "top_tweets_%s_%s" % ( limit,with_in_hours)
+        cache_key = "top_tweets_%s_%s_%s" % ( limit,time,value)
         tweets = cache.get( cache_key)
         if tweets: return tweets
 
@@ -48,10 +48,15 @@ class TweetManager(models.Manager):
              WHERE 
                    music_link IS NOT NULL
                AND music_link NOT LIKE ""
+        """
+        if time and value:
+            query += "AND found >= (NOW() - INTERVAL %s %s)" % (value,time)
+            
+        query += """
           GROUP BY music_link
           ORDER BY count DESC
-             LIMIT 0 , 10
-        """
+             LIMIT 0 , %s
+         """  % (limit)
         cursor.execute(query)
         tweets = cursor.fetchall()
 
