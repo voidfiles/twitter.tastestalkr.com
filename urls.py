@@ -8,7 +8,11 @@ from django.conf import settings
 
 
 
-ranked_tweets = Tweet.objects.top_tweets()
+top_tweets = cache.get('top_tweets')
+#top_tweets = None
+if not top_tweets:
+    top_tweets = Tweet.objects.top_tweets()
+    cache.set('top_tweets',top_tweets,600)
 
 index_dict = {
     'template': 'base.html',
