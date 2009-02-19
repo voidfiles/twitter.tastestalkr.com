@@ -29,14 +29,33 @@ class TweetManager(models.Manager):
 
     def top_tweets(self,limit = 10,with_in_hours= None):
         import re
-        from django.core.cache import cache
         import datetime
+        
+        from django.core.cache import cache
+        #from django.db.models import Count
+        from django.db import connection
         
         cache_key = "top_tweets_%s_%s" % ( limit,with_in_hours)
         tweets = cache.get( cache_key)
         if tweets: return tweets
 
-            
+        cursor = connection.cursor()
+        query = """
+            SELECT 
+                   music_link, 
+                   count( id ) AS count
+              FROM tweets_tweet
+             WHERE 
+                   music_link IS NOT NULL
+               AND music_link NOT LIKE ""
+          GROUP BY music_link
+          ORDER BY count DESC
+             LIMIT 0 , 10
+        """
+        cursor.execute(query)
+        tweets = cursor.fetchall()
+
+        """ 
         
         
         songs = {}
@@ -47,8 +66,8 @@ class TweetManager(models.Manager):
             tweets.filter(created__gte=date)
 
 
-        
-        
+        tweets.aggregate(Count("music_link"))
+
         for tweet in tweets:
             for pattern in TWEET_PATTERNS:
                 matches = pattern.findall(tweet.raw)
@@ -63,6 +82,7 @@ class TweetManager(models.Manager):
         alist = sorted(songs.iteritems(), key=lambda (k,v): (v,k) ,reverse=True)
         
         tweets = alist[0:limit]
+        """
         
         cache.set(cache_key,tweets,600)
         

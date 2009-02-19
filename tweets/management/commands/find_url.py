@@ -33,13 +33,16 @@ class Command(BaseCommand):
 
     def handle(self, *app_labels, **options):
         from tweets.models import Tweet 
-
-        for tweet in Tweet.objects.all()[0:10]:
-            if tweet.music_link: continue
-            music_url = tweet.music_link_finder()
-            print "%s, %s" % (music_url,tweet.raw)
-            tweet.music_link = music_url
-            tweet.save()
+        tweets = Tweet.objects.values_list("id","music_link")
+        
+        for tweet in tweets:
+            if tweet[1]: continue
+            tweet_object = Tweet.objects.get(id=tweet[0])
+            music_url = tweet_object.music_link_finder()
+            tweet_object.music_link = music_url
+            tweet_object.save()
+            
+            print "%s, %s" % (music_url,tweet_object.raw)
         
                     
             

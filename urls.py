@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import *
 from twmusic.tweets.models import Tweet
-
 from django.conf import settings
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -8,16 +7,12 @@ from django.conf import settings
 
 
 
-top_tweets = cache.get('top_tweets')
-#top_tweets = None
-if not top_tweets:
-    top_tweets = Tweet.objects.top_tweets()
-    cache.set('top_tweets',top_tweets,600)
+top_tweets = Tweet.objects.top_tweets()
 
 index_dict = {
     'template': 'base.html',
     "extra_context":{ 
-        "ranked_tweets":ranked_tweets 
+        "ranked_tweets":top_tweets 
     }
 }
 urlpatterns = patterns('',
