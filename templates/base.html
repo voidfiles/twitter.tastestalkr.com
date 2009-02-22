@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
-
+{% load tweets_tags %}
 <html lang="en">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -59,6 +59,10 @@
                     
             </div>
             <div id="whats_going" class="append-1 span-11 last">
+                <h2>Volume of Musical tweets</h2>
+                {% google_chart "last_24" %}
+                {% google_chart "last_week" %}                
+                <div class="clear"></div>
                 <h2>Update 1:</h2>
                 <p> The site is back, it buckled slightly under the growing volume. I also added some preliminary filters. You can click to see the hottest music in the last 24 hours. If you notice the url you go too, I am sure some of you will understand what's going on there.</p>
                 <h2>Whats going on here.</h2>

@@ -8,10 +8,12 @@ from django.conf import settings
 
 
 top_tweets = Tweet.objects.top_tweets()
+last_24_activity = Tweet.objects.last_24_activity()
 index_dict = {
     'template': 'base.html',
     "extra_context":{ 
-        "ranked_tweets":top_tweets 
+        "ranked_tweets":top_tweets,
+        "last_24_activity":last_24_activity 
     }
 }
 urlpatterns = patterns('',
